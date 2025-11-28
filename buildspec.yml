@@ -10,5 +10,7 @@ phases:
   post_build:
     commands:
       - docker push 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:latest
+      - chmod +x deploy.sh
+      - ./deploy.sh
 artifacts:
   files: []
