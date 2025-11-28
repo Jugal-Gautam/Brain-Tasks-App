@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
 
-echo "Reading appspec.yml..."
+echo "Reading manifest list from appspec.yml (static)..."
 
-MANIFESTS=$(yq e '.Resources[0].Kubernetes.Manifest[]' appspec.yml)
+# Manifest files listed directly
+MANIFESTS="deployment.yaml service.yaml"
 
 echo "Updating kubeconfig..."
 aws eks update-kubeconfig --name braintasks-cluster --region us-east-1
@@ -16,3 +17,4 @@ for FILE in $MANIFESTS; do
 done
 
 echo "Deployment completed successfully."
+
