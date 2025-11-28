@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - docker build -t braintasks-app .
+      - docker tag braintasks-app:latest 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:latest
+  post_build:
+    commands:
+      - docker push 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:latest
+artifacts:
+  files: []
