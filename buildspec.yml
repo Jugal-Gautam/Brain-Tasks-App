@@ -2,14 +2,21 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - IMAGE_TAG=$(date +%s)
+      - echo IMAGE_TAG=$IMAGE_TAG >> image_detail.txt
   build:
     commands:
-      - docker build -t braintasks-app .
-      - docker tag braintasks-app:latest 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:latest
+      - echo Building the Docker image...
+      - docker build -t braintasks-app:$IMAGE_TAG .
+      - docker tag braintasks-app:$IMAGE_TAG 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:$IMAGE_TAG
   post_build:
     commands:
-      - docker push 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:latest
+      - echo Pushing the Docker image...
+      - docker push 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:$IMAGE_TAG
+      - echo Updating deployment with new image...
+      - sed -i "s|image: .*|image: 968295617741.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/braintasks-app:$IMAGE_TAG|" deployment.yaml
       - chmod +x deploy.sh
       - ./deploy.sh
 artifacts:
